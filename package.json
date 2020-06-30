@@ -1,0 +1,22 @@
+{
+  "name": "crypto-trader",
+  "version": "1.0.0",
+  "description": "A Cryptocurrency trader bot in nodeJS",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx ts-node src/index.ts"
+  },
+  "keywords": [
+    "trade-bot"
+  ],
+  "author": "Rodrigo Ferraz Souza",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^14.0.14",
+    "axios": "^0.19.2",
+    "dotenv": "^8.2.0",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.5"
+  }
+}
