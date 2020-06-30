@@ -9,37 +9,63 @@ import "./services/negotiation/mercadoBTC.interface";
 import { parse } from "path";
 
 let nextOperation: OperationType = {
-  type: "BUY",
+  type: "buy",
   value: null,
 };
-let operations: BuyResponseType[] = [];
-const sell = () => {
-  console.log("\nSELL");
-  nextOperation = {
-    type: "BUY",
-    value: nextOperation.value,
-  };
+let operations: PlaceOrderResponseType[] = [];
+let myAccount: AccountInfoDataType;
+const acoountInfoCallback = (res: AccountInfoDataType) => {
+  myAccount = res;
 };
-const buy = (ticker: TickerType) => {
-  console.log("\nBuy");
-
-  mercadoBTCNegotiationService.buyCrypto(
-    buyCallback,
-    "BRLBTC",
-    parseFloat(ticker.last) / nextOperation.value,
-    nextOperation.value //aqui é pra colocar todo o saldo da carteira
-  );
-};
-const buyCallback = (res: BuyResponseType) => {
+const buyCallback = (res: PlaceOrderResponseType) => {
   operations.push(res);
   nextOperation = {
-    type: "SELL",
+    type: "sell",
     value:
       parseFloat(res.operations[0].price) +
       (parseFloat(res.operations[0].price) *
         parseFloat(res.operations[0].fee_rate)) /
         100,
   };
+};
+const sellCallback = (res: PlaceOrderResponseType) => {
+  nextOperation = {
+    type: "buy",
+    value:
+      parseFloat(res.operations[0].price) -
+      (parseFloat(res.operations[0].price) *
+        parseFloat(res.operations[0].fee_rate)) /
+        100,
+  };
+};
+const checkOperationValid = (type: string, value: number): boolean => {
+  return true;
+};
+const operationMethods = {
+  async buy(ticker: TickerType) {
+    console.log("\nBUY");
+    await mercadoBTCNegotiationService.getAccountInfo(
+      acoountInfoCallback,
+      "accountInfo"
+    );
+    await mercadoBTCNegotiationService.placeOrder(
+      buyCallback,
+      "BTCBRL",
+      parseFloat(myAccount.balance.brl.available) / parseFloat(ticker.last),
+      nextOperation.value ? nextOperation.value : parseFloat(ticker.last),
+      "sell"
+    );
+  },
+  sell() {
+    console.log("\nSELL");
+    mercadoBTCNegotiationService.placeOrder(
+      sellCallback,
+      "BRLBTC",
+      parseFloat(myAccount.balance.btc.available),
+      nextOperation.value,
+      "sell"
+    );
+  },
 };
 const mainLoop = async () => {
   //console.log(operations);
@@ -49,14 +75,13 @@ const mainLoop = async () => {
     ticker = resp;
   }, "BTC");
   console.log(`last: ${ticker.last}`);
-  nextOperation.value
-    ? nextOperation.type === "BUY"
-      ? buy(ticker)
-      : sell()
-    : buy(ticker);
-  console.log(`next operation type: ${nextOperation.type}`);
-  console.log(`next operation value: ${nextOperation.value}`);
-  await setTimeOutPromise(1000);
+  if (checkOperationValid(nextOperation.type, nextOperation.value)) {
+    let op = operationMethods[nextOperation.type];
+    op(ticker);
+    console.log(`next operation type: ${nextOperation.type}`);
+    console.log(`next operation value: ${nextOperation.value}`);
+  }
+  await setTimeOutPromise(5000);
   mainLoop();
 };
 

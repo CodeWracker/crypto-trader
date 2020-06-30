@@ -1,51 +1,37 @@
 import api from "../../configs/axios.config";
+import tapiEnum from "./tapi.enum";
 
-const exampleResponse = {
-  response_data: {
-    order: {
-      order_id: 3,
-      coin_pair: "BRLBTC",
-      order_type: 1,
-      status: 4,
-      has_fills: true,
-      quantity: "1.00000000",
-      limit_price: "900.00000",
-      executed_quantity: "1.00000000",
-      executed_price_avg: "900.00000",
-      fee: "0.00300000",
-      created_timestamp: "1453835329",
-      updated_timestamp: "1453835329",
-      operations: [
-        {
-          operation_id: 1,
-          quantity: "1.00000000",
-          price: "900.00000",
-          fee_rate: "0.30",
-          executed_timestamp: "1453835329",
-        },
-      ],
-    },
-  },
-  status_code: 100,
-  server_unix_timestamp: "1453835329",
-};
-
-const buyCrypto = async (
+import examples from "./examples";
+let nounce: number = 1;
+const placeOrder = async (
   callback,
   coin_pair: string,
   quantity: number,
-  limit_price: number
+  limit_price: number,
+  type: string
 ) => {
-  const method = "place_buy_order";
   const params = {
     coin_pair: coin_pair,
     quantity: quantity,
     limit_price: limit_price,
-    tapi_method: method,
+    tapi_method: tapiEnum[type],
+    tapi_nounce: nounce,
   };
-  console.log(`BUY OPERATION PARAMS: ${JSON.stringify(params)}`);
+  nounce++;
+  console.log(`${type} OPERATION PARAMS: ${JSON.stringify(params)}`);
 
-  return callback(exampleResponse.response_data.order);
+  return callback(examples.orderResponse.response_data.order);
 };
 
-export default { buyCrypto };
+const getAccountInfo = async (callback, type: string) => {
+  const params = {
+    tapi_method: tapiEnum[type],
+    tapi_nounce: nounce,
+  };
+  nounce++;
+  console.log(`GET ACCOUNT INFO OPERATION PARAMS: ${JSON.stringify(params)}`);
+
+  return callback(examples.accountResponse.response_data);
+};
+
+export default { placeOrder, getAccountInfo };
