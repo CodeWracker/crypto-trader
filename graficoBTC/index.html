@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>BitcoinXDias</title>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"
+      integrity="sha512-s+xg36jbIujB2S2VKfpGmlC3T5V2TF3lY48DX7u2r9XzGzgPsa6wTpOQA7J9iffvdeBN0q9tKzRxVxw1JviZPg=="
+      crossorigin="anonymous"
+    ></script>
+    <script src="./utils.js"></script>
+    <style>
+      canvas {
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div style="width: 75%">
+      <canvas id="canvas"></canvas>
+    </div>
+    <br />
+    <br />
+
+    <button id="addData">Add Data</button>
+    <script>
+      const mydata = [
+        50972.26385066,
+        51207.79298309,
+        51095.78939243,
+        51125.00800466,
+        52882.47471425,
+        51195.37973327,
+        49484.26159272,
+        50008.90291337,
+        49163.72815972,
+        48864.49231166,
+        48687.07871244,
+        48069.7735612,
+        48153.20080401,
+        48739.53818566,
+        47424.27559336,
+        48077.57099888,
+        47773.24946092,
+        47851.5105195,
+        47767.34042606,
+        49192.10842776,
+        49546.68488517,
+        50275.31111577,
+        50145.43196562,
+        49799.1737439,
+        49879.7550488,
+        50413.41755131,
+        50422.34572473,
+        49572.79133606,
+        49737.38278617,
+        49956.36848303,
+        49669.6023723,
+        49787.99001166,
+        49795.22757285,
+        50122.31941462,
+        50139.19706578,
+        49274.58628624,
+        49276.95997871,
+        49090.71602167,
+        48874.52963705,
+        49698.83940683,
+        49939.16565119,
+        50532.15950085,
+        50078.72877194,
+        49902.73832941,
+        49890.87712887,
+        49903.17415913,
+        50270.6522948,
+        50156.83238231,
+        49889.51262147,
+        49488.0877412,
+        49727.86140385,
+        49742.18687809,
+        49679.06573712,
+        49722.4225765,
+        49442.80753127,
+        48723.69282199,
+        49739.22148887,
+        49987.41300869,
+        50290.48444306,
+        50887.87951899,
+        54665.01517948,
+        56147.07746793,
+        57507.71140031,
+        57085.01983787,
+        58614.1795676,
+        60795.7742275,
+        58943.82862191,
+        60369.28425024,
+        60047.31895543,
+        61583.07534136,
+        63340.13553898,
+        63042.20158392,
+        63767.92799702,
+        64325.90044782,
+        65171.15055195,
+        62991.65849918,
+        63338.77766791,
+        63008.13414027,
+        64054.97569256,
+        64317.71596907,
+        64179.72585328,
+        66738.32295064,
+        66758.85045232,
+        65646.82512365,
+        66933.19961395,
+        65875.54193015,
+        65841.87439789,
+        65933.40915283,
+        66547.90369322,
+        64378.34277808,
+        64490.04724488,
+        63798.08063278,
+        63308.64628906,
+        62974.70607367,
+        63465.56556477,
+        64314.34607252,
+        64787.02230343,
+        62224.87010294,
+        58207.9023648,
+        56312.35548672,
+      ];
+      var config = {
+        type: "line",
+        data: {
+          labels: [100],
+          datasets: [
+            {
+              label: "Preço BITCOIN",
+              backgroundColor: window.chartColors.red,
+              borderColor: window.chartColors.red,
+              data: [mydata[0]],
+              fill: false,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          title: {
+            display: true,
+            text: "Bitcoin X Dias",
+          },
+          tooltips: {
+            mode: "index",
+            intersect: false,
+          },
+          hover: {
+            mode: "nearest",
+            intersect: true,
+          },
+          scales: {
+            x: {
+              display: true,
+              scaleLabel: {
+                display: true,
+                labelString: "Month",
+              },
+            },
+            y: {
+              display: true,
+              scaleLabel: {
+                display: true,
+                labelString: "Value",
+              },
+            },
+          },
+        },
+      };
+
+      window.onload = function () {
+        var ctx = document.getElementById("canvas").getContext("2d");
+        window.myLine = new Chart(ctx, config);
+      };
+
+      document.getElementById("addData").addEventListener("click", function () {
+        console.log(config.data.datasets[0].data.length < 100);
+        if (config.data.datasets[0].data.length < 101) {
+          var month = config.data.labels[config.data.labels.length - 1] - 1;
+          config.data.labels.push(month);
+
+          config.data.datasets.forEach(function (dataset) {
+            dataset.data.push(mydata[100 - month]);
+          });
+
+          window.myLine.update();
+        }
+      });
+
+      var colorNames = Object.keys(window.chartColors);
+    </script>
+  </body>
+</html>

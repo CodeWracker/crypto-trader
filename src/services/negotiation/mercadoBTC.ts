@@ -1,7 +1,7 @@
 import api from "../../configs/axios.config";
 import tapiEnum from "./tapi.enum";
-
 import examples from "./examples";
+import utils from "../../utils";
 let nounce: number = 1;
 const placeOrder = async (
   callback,
@@ -28,6 +28,9 @@ const getAccountInfo = async (callback, type: string) => {
     tapi_method: tapiEnum[type],
     tapi_nounce: nounce,
   };
+  let params_string = utils.paramsURL(params);
+  console.log(params_string);
+
   nounce++;
   console.log(`GET ACCOUNT INFO OPERATION PARAMS: ${JSON.stringify(params)}`);
 

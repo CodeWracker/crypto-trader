@@ -111,6 +111,5 @@ const mainLoop = async () => {
 };
 
 const setTimeOutPromise = promisify(setTimeout);
-let variation = getTaxValue(process.env.MIN_VARIATIN_BY_TAXES.split("/"));
 
 mainLoop();
